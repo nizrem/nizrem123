@@ -2,6 +2,19 @@
 
 echo "🚀 Начинаем локальную установку n8n (Ядро Миланы) на Linux Mint..."
 
+# 0. Проверяем и устанавливаем Docker, если его нет
+if ! command -v docker &> /dev/null; then
+    echo "🐳 Docker не найден. Начинаем установку (может потребоваться пароль от Linux)..."
+    sudo apt update
+    sudo apt install -y docker.io docker-compose-plugin
+    sudo systemctl enable docker
+    sudo systemctl start docker
+    sudo usermod -aG docker $USER
+    echo "✅ Docker успешно установлен!"
+else
+    echo "✅ Docker уже установлен, идем дальше."
+fi
+
 # 1. Создаем папки
 echo "📁 Создаем рабочие директории..."
 mkdir -p ~/milana-local/knowledge_base
@@ -45,8 +58,8 @@ services:
 EOF
 
 # 4. Запускаем сборку и контейнер
-echo "🔨 Собираем и запускаем контейнер..."
-docker compose up --build -d
+echo "🔨 Собираем и запускаем контейнер (используем sudo для надежности)..."
+sudo docker compose up --build -d
 
 echo "✅ Установка завершена!"
 echo "База знаний (складывать PDF сюда): ~/milana-local/knowledge_base"
